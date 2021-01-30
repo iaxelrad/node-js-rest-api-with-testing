@@ -14,16 +14,19 @@ exports.signup = async (req, res, next) => {
     error.data = errors.array();
     throw error;
   }
-  const { email, name, password } = req.body;
+  const email = req.body.email;
+  const name = req.body.name;
+  const password = req.body.password;
   try {
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPw = await bcrypt.hash(password, 12);
+
     const user = new User({
       email: email,
-      password: hashedPassword,
+      password: hashedPw,
       name: name,
     });
     const result = await user.save();
-    res.status(201).json({ message: 'User was created', userId: result._id });
+    res.status(201).json({ message: 'User created!', userId: result._id });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -33,12 +36,13 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const email = req.body.email;
+  const password = req.body.password;
   let loadedUser;
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      const error = new Error('A user with this email could bot be found.');
+      const error = new Error('A user with this email could not be found.');
       error.statusCode = 401;
       throw error;
     }
@@ -72,7 +76,7 @@ exports.getUserStatus = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) {
-      const error = new Error('No user found');
+      const error = new Error('User not found.');
       error.statusCode = 404;
       throw error;
     }
@@ -90,13 +94,13 @@ exports.updateUserStatus = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) {
-      const error = new Error('No user found');
+      const error = new Error('User not found.');
       error.statusCode = 404;
       throw error;
     }
     user.status = newStatus;
     await user.save();
-    res.status(200).json({ message: 'User updated' });
+    res.status(200).json({ message: 'User updated.' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

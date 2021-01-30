@@ -80,7 +80,7 @@ exports.getPost = async (req, res, next) => {
     if (!post) {
       const error = new Error('Could not find post.');
       error.statusCode = 404;
-      throw error; //throw => reaches next catch block
+      throw error;
     }
     res.status(200).json({ message: 'Post fetched.', post: post });
   } catch (err) {
@@ -103,7 +103,7 @@ exports.updatePost = async (req, res, next) => {
   const content = req.body.content;
   let imageUrl = req.body.image;
   if (req.file) {
-    imageUrl = req.file.path.replace('\\', '/');
+    imageUrl = req.file.path;
   }
   if (!imageUrl) {
     const error = new Error('No file picked.');
@@ -160,10 +160,9 @@ exports.deletePost = async (req, res, next) => {
 
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
-    io.getIO().emit('posts', { action: 'delete', post: postId });
     await user.save();
-
-    res.status(200).json({ message: 'Deleted post.!' });
+    io.getIO().emit('posts', { action: 'delete', post: postId });
+    res.status(200).json({ message: 'Deleted post.' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
