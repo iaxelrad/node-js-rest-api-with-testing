@@ -1,7 +1,7 @@
 {
   "name": "est-api",
   "version": "1.0.0",
-  "description": "Creation of our REST API project",
+  "description": "Creation of a REST API project",
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 5000",
