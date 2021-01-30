@@ -1,6 +1,7 @@
+const { PASSWORD } = require('./config');
+
 const path = require('path');
 
-const { PASSWORD } = require('./config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -12,10 +13,10 @@ const authRoutes = require('./routes/auth');
 const app = express();
 
 const fileStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, 'images');
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
   },
 });
@@ -32,6 +33,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images'))); //adding static images
@@ -54,6 +56,7 @@ app.use((error, req, res, next) => {
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
+
 mongoose
   .connect(
     `mongodb+srv://iaxelrad:${PASSWORD}@shopcluster.3k5qt.mongodb.net/messages?authSource=admin&replicaSet=atlas-g7nevj-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true`,
@@ -63,7 +66,7 @@ mongoose
     const server = app.listen(8080);
     const io = require('./socket').init(server); //using the http server to estaclish the socket connection on top of it.
     io.on('connection', socket => {
-      console.log('Client connected.');
+      console.log('Client connected');
     });
   })
   .catch(err => console.log(err));
