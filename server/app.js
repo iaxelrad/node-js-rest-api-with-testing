@@ -1,4 +1,4 @@
-const { PASSWORD } = require('./config');
+const { PASSWORD, MONGO_USER } = require('./config');
 
 const path = require('path');
 
@@ -35,12 +35,17 @@ const fileFilter = (req, file, cb) => {
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
+);
 app.use('/images', express.static(path.join(__dirname, 'images'))); //adding static images
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'OPTIONS, GET, POST, PUT, PATCH, DELETE'
+  );
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
@@ -59,7 +64,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://iaxelrad:${PASSWORD}@shopcluster.3k5qt.mongodb.net/messages?authSource=admin&replicaSet=atlas-g7nevj-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true`,
+    `mongodb+srv://${MONGO_USER}:${PASSWORD}@shopcluster.3k5qt.mongodb.net/messages`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(result => {

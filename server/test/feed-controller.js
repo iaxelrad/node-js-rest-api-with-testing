@@ -1,4 +1,4 @@
-const { PASSWORD } = require('../config');
+const { MONGO_USER, PASSWORD } = require('../config');
 
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
@@ -11,10 +11,13 @@ const FeedController = require('../controllers/feed');
 describe('Feed Controller', function () {
   before(function (done) {
     mongoose
-      .connect(`mongodb+srv://iaxelrad:${PASSWORD}@shopcluster.3k5qt.mongodb.net/test-messages`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
+      .connect(
+        `mongodb+srv://${MONGO_USER}:${PASSWORD}@shopcluster.3k5qt.mongodb.net/test-messages`,
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        }
+      )
       .then(result => {
         const user = new User({
           email: 'test@example.com',
